@@ -1,4 +1,7 @@
+const path = require("path");
 const express = require("express");
+require("dotenv").config();
+
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
@@ -25,18 +28,36 @@ app.post("/event", (req, res, next) => {
 app.use("/api", fileUpload);
 
 io.on("connection", (socket) => {
-  //   console.log(socket.id);
-  socket.on("dataFromApi", () => io.emit(arr));
+  socket.on("getInitialData", () => io.emit("dataFromApi", arr));
+
+  socket.on("dataFromApi", () => {
+    console.log("data from api");
+    console.log(arr);
+    io.emit("dataFromApi", { msg: arr, user: "1" });
+  });
   socket.on("toApi", (event) => {
-    // console.log(event);
     addEvent(event, (res) => {
-      res ? io.emit("dataFromApi", arr) : io.emit("error");
+      res
+        ? io.emit("dataFromApi", {
+            msg: arr,
+            user: "1",
+          })
+        : io.emit("error");
+    });
+  });
+
+  socket.on("broadcast-msg", (msg) => {
+    sendMsgs(msg, (res) => {
+      res ? io.emit("reply", msg) : io.emit("failed", "I'm boring");
     });
   });
 });
 
+const sendMsgs = (msg, cb) => {
+  cb(true);
+};
+
 const addEvent = (event, cb) => {
-  //   arr.push(event);
   arr.unshift(event);
   cb(true);
 };
