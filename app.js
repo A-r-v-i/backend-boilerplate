@@ -30,6 +30,8 @@ app.use("/api", fileUpload);
 io.on("connection", (socket) => {
   socket.on("getInitialData", () => io.emit("dataFromApi", arr));
 
+  socket.broadcast.emit("welcome", "hi all");
+
   socket.on("dataFromApi", () => {
     console.log("data from api");
     console.log(arr);
