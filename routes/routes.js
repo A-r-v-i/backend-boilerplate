@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const tokenizer = require("../middlewares/tokenizer");
 
-const loginControl = require("../controllers/controllers");
+const authControl = require("../controllers/controllers");
 
-router.post("/login", loginControl.login);
-router.get("/posts", tokenizer, loginControl.getPosts);
-router.post("/post", tokenizer, loginControl.postData);
+router.post("/login", authControl.login);
+router.post("/signup", authControl.signUp);
+router.get("/posts", tokenizer, authControl.getPosts);
+router.post("/post", tokenizer, authControl.postData);
 module.exports = router;

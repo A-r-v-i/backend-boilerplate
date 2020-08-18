@@ -1,10 +1,12 @@
 require("dotenv").config();
-const path = require("path");
 const express = require("express");
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
+const uri = require("./helper/db");
 
 const fileUpload = require("./fileUpload");
 
@@ -87,6 +89,14 @@ const addEvent = (event, cb) => {
 app.use("/api", mainRoutes);
 
 //PORT listening
-http.listen(port, () => {
-  console.log(`Server launched on ${port}`);
-});
+mongoose
+  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then((result) => {
+    console.log("DB connected..");
+    http.listen(port, () => {
+      console.log(`Server launched on ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
