@@ -9,54 +9,85 @@ exports.signUp = (req, res, next) => {
     email = req.body.email,
     password = req.body.password;
 
-  User.findOne({ email: email }, (err, user) => {
-    if (user) {
-      res.json({
-        message: "User already exist, use alternate email",
-      });
-    } else {
-      User.create({
-        name: name,
-        email: email,
-        password: password,
-      })
-        .then((res) => {
-          console.log(res);
+  User.findOne({ email: email })
+    .then((user) => {
+      if (!user) {
+        User.create({
+          name: name,
+          email: email,
+          password: password,
+        }).then((result) => {
+          console.log(result);
           res.json({
-            message: "User created successfully",
+            message: "User created",
           });
-        })
-        .catch((err) => {
-          console.log(err);
         });
-    }
-  })
-    .then((res) => {
-      console.log(res);
+      } else {
+        res.status(409).json({
+          message: "User already exists",
+        });
+      }
     })
     .catch((err) => {
-      res.json({ message: "Something happened missellenously" });
+      console.log(err);
     });
 };
 
 exports.login = (req, res, next) => {
-  const user = {
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-  };
-  if (user.email === "test@gmail.com" && user.password === "testpassword") {
-    jwt.sign({ user }, secret, { expiresIn: "24h" }, (err, token) => {
-      res.json({
-        token,
-        message: "login successfull",
+  const email = req.body.email,
+    password = req.body.password;
+
+  User.findOne({ email: email })
+    .then((user) => {
+      if (!user) {
+        res.sendStatus(404).json({
+          message: "User not found, Kindly Signup for further process",
+        });
+      }
+      console.log(user);
+      if (user.password !== password) {
+        res.json({
+          message: "Password Incorrect",
+        });
+      } else {
+        const _user = {
+          email: email,
+          password: password,
+          username: user.name,
+        };
+        jwt.sign(
+          { _user },
+          secret,
+          { expiresIn: "24h" },
+          (err,
+          (token) => {
+            res.json({
+              message: "Logged in",
+              loggedIn: true,
+              token,
+            });
+          })
+        );
+      }
+    })
+    .catch((err) => {
+      res.sendStatus(404).json({
+        message: "User not found",
       });
     });
-  } else {
-    res.status(400).json({
-      message: "Invalid Credentials",
-    });
-  }
+
+  // if (user.email === "test@gmail.com" && user.password === "testpassword") {
+  //   jwt.sign({ user }, secret, { expiresIn: "24h" }, (err, token) => {
+  //     res.json({
+  //       token,
+  //       message: "login successfull",
+  //     });
+  //   });
+  // } else {
+  //   res.status(400).json({
+  //     message: "Invalid Credentials",
+  //   });
+  // }
 };
 
 exports.getPosts = (req, res, next) => {
