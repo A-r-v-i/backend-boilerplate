@@ -40,11 +40,10 @@ exports.login = (req, res, next) => {
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        res.sendStatus(404).json({
+        res.sendStatus(400).json({
           message: "User not found, Kindly Signup for further process",
         });
       }
-      console.log(user);
       if (user.password !== password) {
         res.json({
           message: "Password Incorrect",
@@ -55,55 +54,37 @@ exports.login = (req, res, next) => {
           password: password,
           username: user.name,
         };
-        jwt.sign(
-          { _user },
-          secret,
-          { expiresIn: "24h" },
-          (err,
-          (token) => {
-            res.json({
-              message: "Logged in",
-              loggedIn: true,
-              token,
-            });
-          })
-        );
+        jwt.sign({ user }, secret, { expiresIn: "24h" }, (err, token) => {
+          res.json({
+            message: "Logged in",
+            loggedIn: true,
+            token,
+          });
+        });
       }
     })
     .catch((err) => {
-      res.sendStatus(404).json({
+      console.log(err);
+      res.json({
         message: "User not found",
       });
     });
-
-  // if (user.email === "test@gmail.com" && user.password === "testpassword") {
-  //   jwt.sign({ user }, secret, { expiresIn: "24h" }, (err, token) => {
-  //     res.json({
-  //       token,
-  //       message: "login successfull",
-  //     });
-  //   });
-  // } else {
-  //   res.status(400).json({
-  //     message: "Invalid Credentials",
-  //   });
-  // }
 };
 
-exports.getPosts = (req, res, next) => {
-  console.log(req.method);
-};
+// exports.getPosts = (req, res, next) => {
+//   console.log(req.method);
+// };
 
-exports.postData = (req, res, next) => {
-  console.log(req.body);
-  jwt.verify(req.token, secret, (err, authData) => {
-    if (err) {
-      console.log(err);
-      res.sendStatus(403).json({
-        message: "unauthorized",
-      });
-    } else {
-      res.json({ message: "Success", authData });
-    }
-  });
-};
+// exports.postData = (req, res, next) => {
+//   // console.log(req.body);
+//   jwt.verify(req.token, secret, (err, authData) => {
+//     if (err) {
+//       console.log(err);
+//       res.sendStatus(403).json({
+//         message: "unauthorized",
+//       });
+//     } else {
+//       res.json({ message: "Success", authData });
+//     }
+//   });
+// };
