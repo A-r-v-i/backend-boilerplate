@@ -49,13 +49,15 @@ exports.login = (req, res, next) => {
           message: "Password Incorrect",
         });
       } else {
+        // console.log(user);
         const _user = {
           email: email,
           password: password,
           username: user.name,
         };
-        jwt.sign({ user }, secret, { expiresIn: "24h" }, (err, token) => {
+        jwt.sign({ _user }, secret, { expiresIn: "24h" }, (err, token) => {
           res.json({
+            id: user._id,
             message: "Logged in",
             loggedIn: true,
             token,
@@ -71,20 +73,16 @@ exports.login = (req, res, next) => {
     });
 };
 
-// exports.getPosts = (req, res, next) => {
-//   console.log(req.method);
-// };
-
-// exports.postData = (req, res, next) => {
-//   // console.log(req.body);
-//   jwt.verify(req.token, secret, (err, authData) => {
-//     if (err) {
-//       console.log(err);
-//       res.sendStatus(403).json({
-//         message: "unauthorized",
-//       });
-//     } else {
-//       res.json({ message: "Success", authData });
-//     }
-//   });
-// };
+exports.getUserDetails = (req, res, next) => {
+  console.log(req.body.id);
+  const id = req.body.id;
+  if (id) {
+    User.findById(id)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
