@@ -6,8 +6,6 @@ const io = require("socket.io")(http);
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-const uri = require("./helper/db");
-
 const fileUpload = require("./fileUpload");
 
 /**
@@ -22,7 +20,9 @@ app.use(bodyParser.json());
 
 let arr = ["sample", "test", "RIP"];
 
-// CORS
+/**
+ * CORS
+ */
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -90,7 +90,10 @@ app.use("/api", mainRoutes);
 
 //PORT listening
 mongoose
-  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.M_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then((result) => {
     console.log("DB connected..");
     http.listen(port, () => {

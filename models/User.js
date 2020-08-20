@@ -14,6 +14,15 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  confessions: [
+    {
+      postId: {
+        type: Schema.Types.ObjectId,
+        ref: "Confession",
+        required: false,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);

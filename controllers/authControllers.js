@@ -1,7 +1,6 @@
+const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const User = require("../models/User");
-const jwt = require("jsonwebtoken"),
-  secret = "panjumittaiyaeee1234masteraNNanuKuaeOreaOOthapp1oemm98";
 
 exports.signUp = (req, res, next) => {
   console.log(req.body);
@@ -55,14 +54,19 @@ exports.login = (req, res, next) => {
           password: password,
           username: user.name,
         };
-        jwt.sign({ _user }, secret, { expiresIn: "24h" }, (err, token) => {
-          res.json({
-            id: user._id,
-            message: "Logged in",
-            loggedIn: true,
-            token,
-          });
-        });
+        jwt.sign(
+          { _user },
+          process.env.SECRET,
+          { expiresIn: "24h" },
+          (err, token) => {
+            res.json({
+              id: user._id,
+              message: "Logged in",
+              loggedIn: true,
+              token,
+            });
+          }
+        );
       }
     })
     .catch((err) => {
@@ -74,15 +78,24 @@ exports.login = (req, res, next) => {
 };
 
 exports.getUserDetails = (req, res, next) => {
-  console.log(req.body.id);
   const id = req.body.id;
   if (id) {
     User.findById(id)
       .then((result) => {
-        console.log(result);
+        // console.log(result);
+        res.json({
+          user: result,
+        });
       })
       .catch((err) => {
         console.log(err);
+        res.json({
+          message: "Error Occured!",
+        });
       });
+  } else {
+    res.json({
+      message: "Unauthorized user",
+    });
   }
 };
