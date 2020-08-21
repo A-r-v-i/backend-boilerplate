@@ -96,8 +96,6 @@ exports.deleteConfession = async (req, res, next) => {
   console.log(userId, postId);
   await jwt.verify(req.token, process.env.SECRET, (err, authData) => {
     if (!err) {
-      let confessions = Confession.find();
-      console.log(confessions);
       Confession.findById(postId).then((confession) => {
         if (confession.userId == userId) {
           // confessions = confessions.filter((item) => item._id != postId);
