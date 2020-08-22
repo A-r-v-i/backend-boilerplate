@@ -17,7 +17,6 @@ exports.getUserPost = (req, res, next) => {
     const itemFromUser = posts.filter((post) => {
       return post.userId == id;
     });
-    // console.log(itemFromUser);
     res.json({
       items: itemFromUser,
     });
@@ -65,22 +64,45 @@ exports.postData = async (req, res, next) => {
 exports.postComment = async (req, res, next) => {
   const postId = req.params.postId,
     userId = req.body.userId,
-    content = req.body.content;
+    content = req.body.content,
+    edit = req.query.edit,
+    commentId = req.body.commentId;
   let post = await Confession.findById(postId);
   if (post) {
     await jwt.verify(req.token, process.env.SECRET, (err, authData) => {
       if (err) {
         res.json({ message: "Unauthorized user access" });
       } else {
-        post.comments.push({
-          content: content,
-          userId: userId,
-        });
-        post.save();
-        res.json({
-          post: post,
-          message: "comments posted successfully",
-        });
+        if (edit) {
+          console.log(edit, commentId, userId);
+          let comment = post.comments.find(
+            (_post) => _post._id == commentId && _post.userId == userId
+          );
+          if (comment) {
+            comment.content = content;
+            console.log(comment);
+            post.save();
+            res.json({
+              post: post.comments,
+              message: "comments edited successfully",
+            });
+          } else {
+            console.log("user mismatched");
+            res.json({
+              message: "Unauthorized action.",
+            });
+          }
+        } else {
+          post.comments.push({
+            content: content,
+            userId: userId,
+          });
+          post.save();
+          res.json({
+            post: post.comments,
+            message: "comments posted successfully",
+          });
+        }
       }
     });
   } else {
@@ -93,34 +115,32 @@ exports.postComment = async (req, res, next) => {
 exports.deleteConfession = async (req, res, next) => {
   const postId = req.body.postId,
     userId = req.body.userId;
-  console.log(userId, postId);
+  // console.log(userId, postId);
   await jwt.verify(req.token, process.env.SECRET, (err, authData) => {
     if (!err) {
-      Confession.findById(postId).then((confession) => {
-        if (confession.userId == userId) {
-          // confessions = confessions.filter((item) => item._id != postId);
-          confession.save();
+      Confession.findOneAndDelete({
+        _id: postId,
+        userId: userId,
+      })
+        .then((result) => {
+          console.log(result);
+          if (!result) {
+            res.status(404).json({
+              message: "No such post exists.",
+            });
+          } else {
+            // console.log("Deleted: ", result);
+            res.status(200).json({
+              message: "Post deleted successfully",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
           res.json({
-            message: "Deleted success",
+            message: "Post not found for the user",
           });
-        } else {
-          res.json({
-            message: "Unauthorized event occured.",
-          });
-        }
-      });
-      //   if (confession.userId === userId) {
-      //     console.log("found");
-      //     confessions = confessions.filter((item) => item._id !== postId);
-      //     confessions.save();
-      //     res.json({
-      //       message: "Post deleted successfully",
-      //     });
-      //   } else {
-      //   res.json({
-      //     message: "Unauthorized",
-      //   });
-      // }
+        });
     } else {
       res.json({
         message: "Unauthorized access",
