@@ -4,11 +4,14 @@ const Confession = require("../models/Confession");
 const User = require("../models/User");
 
 exports.getPosts = (req, res, next) => {
-  Confession.find().then((posts) => {
-    res.json({
-      confessions: posts,
+  Confession.find()
+    .populate("userId", ["_id", "name"])
+    .then((posts) => {
+      console.log(posts);
+      res.json({
+        confessions: posts,
+      });
     });
-  });
 };
 
 exports.getUserPost = (req, res, next) => {
@@ -27,6 +30,7 @@ exports.postData = async (req, res, next) => {
   const title = req.body.title,
     content = req.body.content,
     id = req.body.userId;
+    console.log(req.body)
   let user = await User.findById(id);
   if (user) {
     await jwt.verify(req.token, process.env.SECRET, (err, authData) => {

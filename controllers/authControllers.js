@@ -64,6 +64,7 @@ exports.login = (req, res, next) => {
               message: "Logged in",
               loggedIn: true,
               token,
+              loggedOn: new Date(),
             });
           }
         );
