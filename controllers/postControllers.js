@@ -120,10 +120,9 @@ exports.likePost = async (req, res, next) => {
   const postId = req.params.postId,
     userId = req.body.userId,
     liked = req.body.liked;
-  console.log(req.params, req.body);
+  console.log(liked);
   let arr = [];
   await Confession.findById(postId).then((post) => {
-    console.log(post);
     if (!post) {
       res.json({
         message: "Post doesn't exist",
@@ -134,15 +133,16 @@ exports.likePost = async (req, res, next) => {
       res.json({
         message: "Success",
       });
-      console.log(post);
     } else {
-      post.likes.pop(userId);
+      arr = post.likes.filter((user) => {
+        user._id != userId;
+      });
+      // console.log(arr);
+      post.likes = arr;
       post.save();
       res.json({
         message: "disliked",
       });
-      // post.likes = post.likes.filter((user) => user.userId != userId);
-      // post.save();
     }
   });
 };
