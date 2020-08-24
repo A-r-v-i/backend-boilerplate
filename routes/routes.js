@@ -24,6 +24,7 @@ router.get("/user", tokenizer, authControl.getUserDetails);
 router.get("/posts", tokenizer, postControl.getPosts);
 router.post("/post", tokenizer, postControl.postData);
 router.get("/posts/:userId", tokenizer, postControl.getUserPost);
+router.put("/post/:postId", tokenizer, postControl.likePost);
 router.post("/post/:postId", tokenizer, postControl.postComment);
 router.delete("/post", tokenizer, postControl.deleteConfession);
 

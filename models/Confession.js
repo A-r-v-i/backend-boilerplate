@@ -16,6 +16,14 @@ const confessionSchema = new Schema(
       ref: "User",
       required: true,
     },
+    likes: [
+      {
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
     comments: [
       {
         userId: {

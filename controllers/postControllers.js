@@ -7,7 +7,7 @@ exports.getPosts = (req, res, next) => {
   Confession.find()
     .populate("userId", ["_id", "name"])
     .then((posts) => {
-      console.log(posts);
+      // console.log(posts);
       res.json({
         confessions: posts,
       });
@@ -30,7 +30,7 @@ exports.postData = async (req, res, next) => {
   const title = req.body.title,
     content = req.body.content,
     id = req.body.userId;
-    console.log(req.body)
+  // console.log(req.body);
   let user = await User.findById(id);
   if (user) {
     await jwt.verify(req.token, process.env.SECRET, (err, authData) => {
@@ -78,7 +78,7 @@ exports.postComment = async (req, res, next) => {
         res.json({ message: "Unauthorized user access" });
       } else {
         if (edit) {
-          console.log(edit, commentId, userId);
+          // console.log(edit, commentId, userId);
           let comment = post.comments.find(
             (_post) => _post._id == commentId && _post.userId == userId
           );
@@ -114,6 +114,37 @@ exports.postComment = async (req, res, next) => {
       message: "Post doesn't exist!",
     });
   }
+};
+
+exports.likePost = async (req, res, next) => {
+  const postId = req.params.postId,
+    userId = req.body.userId,
+    liked = req.body.liked;
+  console.log(req.params, req.body);
+  let arr = [];
+  await Confession.findById(postId).then((post) => {
+    console.log(post);
+    if (!post) {
+      res.json({
+        message: "Post doesn't exist",
+      });
+    } else if (liked) {
+      post.likes.push(userId);
+      post.save();
+      res.json({
+        message: "Success",
+      });
+      console.log(post);
+    } else {
+      post.likes.pop(userId);
+      post.save();
+      res.json({
+        message: "disliked",
+      });
+      // post.likes = post.likes.filter((user) => user.userId != userId);
+      // post.save();
+    }
+  });
 };
 
 exports.deleteConfession = async (req, res, next) => {
