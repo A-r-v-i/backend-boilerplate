@@ -16,14 +16,18 @@ exports.getPosts = (req, res, next) => {
 
 exports.getUserPost = (req, res, next) => {
   const id = req.params.userId;
-  Confession.find().then((posts) => {
-    const itemFromUser = posts.filter((post) => {
-      return post.userId == id;
+  Confession.find()
+    .populate("userId", ["name", "email", "confessions"])
+    .then((posts) => {
+      const itemFromUser = posts.filter((post) => {
+        console.log(post.userId._id, id);
+        return post.userId._id == id;
+      });
+      console.log(itemFromUser);
+      res.json({
+        items: itemFromUser,
+      });
     });
-    res.json({
-      items: itemFromUser,
-    });
-  });
 };
 
 exports.postData = async (req, res, next) => {
@@ -46,7 +50,7 @@ exports.postData = async (req, res, next) => {
           userId: user,
         })
           .then((post) => {
-            console.log(post);
+            // console.log(post);
             user.confessions.push(post);
             user.save();
             res.json({
