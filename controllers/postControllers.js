@@ -69,8 +69,12 @@ exports.postComment = async (req, res, next) => {
   const postId = req.params.postId,
     userId = req.body.userId,
     content = req.body.content,
+    /**
+     * optionable, only for editing the comments
+     */
     edit = req.query.edit,
     commentId = req.body.commentId;
+  // console.log(content, userId, postId);
   let post = await Confession.findById(postId);
   if (post) {
     await jwt.verify(req.token, process.env.SECRET, (err, authData) => {
