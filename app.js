@@ -14,6 +14,7 @@ const fileUpload = require("./fileUpload");
 const mainRoutes = require("./routes/routes");
 
 const port = process.env.PORT || 5000;
+const muri = process.env.MONGODB_URI || process.env.M_URI;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -36,6 +37,12 @@ app.use(function (req, res, next) {
   );
   res.setHeader("Access-Control-Allow-Credentials", true);
   next();
+});
+
+app.get("/welcome", (req, res, next) => {
+  res.send(
+    "welcome to confession datas. Connect with our client to visualize us. Thank you"
+  );
 });
 
 app.post("/event", (req, res, next) => {
@@ -94,14 +101,14 @@ app.use("/api", mainRoutes);
 
 //PORT listening
 mongoose
-  .connect(process.env.M_URI, {
+  .connect(muri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then((result) => {
     console.log("DB connected..");
     http.listen(port, () => {
-      console.log(`Server launched on ${port}`);
+      console.log(`Server launched `);
     });
   })
   .catch((err) => {

@@ -4,7 +4,8 @@
   "description": "a simple tut for create an ReSTful api using node and express",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app",
+    "start": "node app.js",
+    "start-dev": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "aravind",
@@ -24,5 +25,15 @@
   },
   "engines": {
     "node": "14.5.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/A-r-v-i/backend-boilerplate.git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "confession-api",
+    "confess"
+  ]
 }

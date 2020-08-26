@@ -1,0 +1,7 @@
+{
+  "name": "Confession data API",
+  "description": "BAckend api for confession app",
+  "keywords": ["confession", "node", "entertainment"],
+  "repository": "https://github.com/A-r-v-i/backend-boilerplate.git",
+  "success_url": "/welcome"
+}
