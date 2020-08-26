@@ -100,8 +100,24 @@ const addEvent = (event, cb) => {
 app.use("/api", mainRoutes);
 
 //PORT listening
+if (process.env.NODE_ENV === "production") {
+  mongoose
+    .connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then((result) => {
+      console.log("DB connected..");
+      http.listen(port, () => {
+        console.log(`Server launched `);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 mongoose
-  .connect(muri, {
+  .connect(process.env.M_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
