@@ -61,6 +61,8 @@ exports.login = (req, res, next) => {
           (err, token) => {
             res.json({
               id: user._id,
+              name: user.name,
+              email: user.email,
               message: "Logged in",
               loggedIn: true,
               token,
